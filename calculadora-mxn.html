@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cuánto cuesta DE VERDAD ChatGPT/Grok Bot en pesos? Calculadora MXN</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --acc:#38bdf8; --good:#4ade80; --bad:#f87171; --txt:#e2e8f0; --mut:#94a3b8; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,sans-serif; }
+  body { background:var(--bg); color:var(--txt); padding:16px; max-width:720px; margin:0 auto; }
+  h1 { font-size:1.5rem; line-height:1.25; margin-bottom:4px; }
+  .sub { color:var(--mut); font-size:.9rem; margin-bottom:16px; }
+  .card { background:var(--card); border-radius:14px; padding:16px; margin-bottom:14px; }
+  label { display:block; font-size:.8rem; color:var(--mut); margin:10px 0 4px; }
+  input { width:100%; padding:10px; border-radius:8px; border:1px solid #334155; background:#0b1220; color:var(--txt); font-size:1rem; }
+  .row { display:flex; gap:10px; }
+  .row > div { flex:1; }
+  .tot { font-size:2rem; font-weight:800; color:var(--acc); }
+  .line { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed #334155; font-size:.92rem; }
+  .line span:last-child { font-variant-numeric:tabular-nums; }
+  .bad { color:var(--bad); }
+  table { width:100%; border-collapse:collapse; font-size:.9rem; }
+  th, td { padding:8px 6px; text-align:right; border-bottom:1px solid #334155; }
+  th:first-child, td:first-child { text-align:left; }
+  .justbot { background:rgba(56,189,248,.08); }
+  .justbot a { color:var(--acc); font-weight:700; text-decoration:none; }
+  .btns { display:flex; gap:10px; margin-top:12px; }
+  button { flex:1; padding:12px; border-radius:10px; border:0; font-weight:700; font-size:.95rem; cursor:pointer; }
+  .wa { background:#25d366; color:#052e16; }
+  .cp { background:#334155; color:var(--txt); }
+  .note { color:var(--mut); font-size:.75rem; margin-top:12px; }
+  .relief { color:var(--good); font-size:.9rem; margin-top:10px; font-weight:600; }
+</style>
+</head>
+<body>
+<h1>¿Cuánto cuesta <u>de verdad</u> una suscripción de IA en México?</h1>
+<p class="sub">Te cobran en dólares, tu banco cambia el tipo de cambio como quiere, y encima va el IVA. Ponle números y descubre lo que pagas en realidad.</p>
+
+<div class="card">
+  <div class="row">
+    <div><label>Precio de lista (USD/mes)</label><input id="usd" type="number" value="20"></div>
+    <div><label>Tipo de cambio de tu tarjeta (USD→MXN)</label><input id="fx" type="number" value="19.8"></div>
+  </div>
+  <div class="row">
+    <div><label>IVA (%)</label><input id="iva" type="number" value="16"></div>
+    <div><label>Comisión por pagarlo en el extranjero (%)</label><input id="fee" type="number" value="3"></div>
+  </div>
+</div>
+
+<div class="card" id="out">
+  <div class="line"><span>Precio de lista</span><span id="l1">…</span></div>
+  <div class="line bad"><span>+ IVA</span><span id="l2">…</span></div>
+  <div class="line bad"><span>+ Comisión del banco</span><span id="l3">…</span></div>
+  <div class="line" style="border:0"><span><b>LO QUE PAGAS POR MES</b></span><span class="tot" id="l5">…</span></div>
+  <div class="line"><span>…o sea, por año</span><span id="l6" class="bad">…</span></div>
+</div>
+
+<div class="card">
+  <table>
+    <tr><th>Suscripción</th><th>Lista (USD)</th><th>Real (MXN/mes)</th></tr>
+    <tr><td>ChatGPT Plus</td><td>$20</td><td id="rplus">…</td></tr>
+    <tr><td>Grok Bot / SuperGrok</td><td>$30</td><td id="rgrok">…</td></tr>
+    <tr><td>ChatGPT Pro</td><td>$200</td><td id="rpro">…</td></tr>
+    <tr class="justbot"><td><a href="https://justbot.co" rel="noopener">JustBot</a> (bots con su propia computadora)</td><td>$10</td><td id="rjb">…</td></tr>
+  </table>
+  <p class="relief">JustBot cuesta un tercio de lo que cuesta Grok Bot, así que con lo mismo usas mucho más.</p>
+</div>
+
+<div class="btns">
+  <button class="wa" onclick="waShare()">Compartir por WhatsApp</button>
+  <button class="cp" onclick="copyTxt()">Copiar resultado</button>
+</div>
+<p class="note">Tipo de cambio, IVA y comisión editables: ponle los de tu banco. Hecho con JustBot · justbot.co</p>
+
+<script>
+const fmt = n => "$" + n.toLocaleString("es-MX", {maximumFractionDigits:0});
+const $ = id => document.getElementById(id);
+const mult = () => 1 + ($("iva").valueAsNumber + $("fee").valueAsNumber)/100;
+function calc(){
+  const usd=$("usd").valueAsNumber||0, fx=$("fx").valueAsNumber||0, base=usd*fx;
+  const iva=base*($("iva").valueAsNumber||0)/100, fee=base*($("fee").valueAsNumber||0)/100;
+  const tot=base+iva+fee;
+  $("l1").textContent=fmt(base); $("l2").textContent=fmt(iva); $("l3").textContent=fmt(fee);
+  $("l5").textContent=fmt(tot); $("l6").textContent=fmt(tot*12)+"/año";
+  $("rplus").textContent=fmt(20*fx*mult());
+  $("rgrok").textContent=fmt(30*fx*mult());
+  $("rpro").textContent=fmt(200*fx*mult());
+  $("rjb").textContent=fmt(10*fx*mult());
+}
+function txt(){
+  return "¿Cuánto cuesta de verdad ChatGPT Plus en México? Lista: US$"+$("usd").value+" → en pesos, con IVA y comisión del banco: "+$("l5").textContent+"/mes ("+$("l6").textContent+" por año 😱). JustBot cuesta un tercio de Grok Bot y te da mucho más uso. Calcula el tuyo: "+location.href;
+}
+function waShare(){ window.open("https://wa.me/?text="+encodeURIComponent(txt())); }
+function copyTxt(){ if(navigator.clipboard) navigator.clipboard.writeText(txt()); alert("Copiado ✅"); }
+["usd","fx","iva","fee"].forEach(k=>$(k).addEventListener("input",calc));
+calc();
+</script>
+</body>
+</html>
